@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException, Body, File, UploadFile
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -10,6 +10,10 @@ import httpx
 import json
 from pydantic import BaseModel
 import uuid
+import io
+import PyPDF2
+import re
+from typing import Optional
 
 # /backend 
 ROOT_DIR = Path(__file__).parent
