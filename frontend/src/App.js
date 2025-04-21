@@ -56,7 +56,7 @@ function App() {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!profileData) {
+    if (!profileData || !profileData.profile_id) {
       setUploadError("Please analyze a LinkedIn profile first");
       return;
     }
@@ -69,20 +69,29 @@ function App() {
     setUploadError(null);
 
     try {
+      console.log(`Uploading resume for profile ID: ${profileData.profile_id}`);
       const response = await fetch(`${BACKEND_URL}/api/upload-resume`, {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload resume");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Failed to upload resume");
       }
 
       const data = await response.json();
+      console.log("Resume analysis complete:", data);
+      
+      if (!data.optimized_sections) {
+        throw new Error("Invalid response format from server");
+      }
+      
       setOptimizedSections(data.optimized_sections);
       setBrandingPlan(data.branding_plan);
       setActiveTab("optimization");
     } catch (err) {
+      console.error("Resume upload error:", err);
       setUploadError(err.message);
     } finally {
       setUploadLoading(false);
