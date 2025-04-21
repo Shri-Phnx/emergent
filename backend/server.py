@@ -251,26 +251,31 @@ def analyze_about(about):
     """Analyze the about section"""
     score = 0
     feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
     
-    # Check length
+    # Assess completeness (25 points) - check length
     if about:
         if len(about) < 50:
+            category_scores["completeness"] = 5
             feedback.append("Your about section is too short. Aim for at least 200-300 characters.")
-            score += 10
         elif len(about) < 200:
+            category_scores["completeness"] = 10
             feedback.append("Your about section is on the shorter side. Consider expanding it.")
-            score += 25
         elif len(about) < 1000:
+            category_scores["completeness"] = 20
             feedback.append("Your about section has a good length.")
-            score += 40
         else:
+            category_scores["completeness"] = 25
             feedback.append("Your about section is comprehensive, but ensure it remains focused and relevant.")
-            score += 35
     else:
         feedback.append("You don't have an about section. This is a crucial part of your profile.")
-        score = 0
     
-    # Check for storytelling elements
+    # Assess impact (25 points) - check for storytelling elements
     storytelling_indicators = ["journey", "passion", "learned", "discovered", "built", 
                                "created", "led", "achieved", "mission", "vision"]
     
@@ -278,21 +283,31 @@ def analyze_about(about):
     if about:
         for indicator in storytelling_indicators:
             if indicator.lower() in about.lower():
-                storytelling_score += 5
+                storytelling_score += 3
     
-    score += min(30, storytelling_score)
+    category_scores["impact"] = min(25, storytelling_score)
     
     if storytelling_score < 15:
         feedback.append("Your about section could benefit from more storytelling elements to engage readers.")
     else:
         feedback.append("Good use of storytelling in your about section.")
     
-    # Check for first-person narrative
+    # Assess keywords (25 points) - Check for industry-relevant terms and professional vocabulary
+    # This is a placeholder - in a real implementation, we would check against industry-specific terms
+    if about:
+        keyword_density = min(25, len(about.split()) / 20)  # Simple placeholder calculation
+        category_scores["keywords"] = keyword_density
+    
+    # Assess relevance (25 points) - Check for personal brand alignment and first-person narrative
     if about and ("I am" in about or "I have" in about or "I " in about):
-        score += 20
+        category_scores["relevance"] = 20
         feedback.append("Good use of first-person narrative in your about section.")
     else:
+        category_scores["relevance"] = 5
         feedback.append("Consider using first-person narrative for a more personal touch.")
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
     
     # Final assessment
     if score < 25:
@@ -304,7 +319,7 @@ def analyze_about(about):
     else:
         feedback.append("Your about section is excellent and likely to engage readers.")
     
-    return min(100, score), feedback
+    return min(100, score), feedback, category_scores
 
 def analyze_experience(experience):
     """Analyze the experience section"""
