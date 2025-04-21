@@ -1005,6 +1005,164 @@ def generate_content_suggestions(profile_data, analysis_results):
     unique_suggestions = list(set(suggestions))
     return unique_suggestions[:10]
 
+# Helper functions for resume analysis and optimization
+
+def extract_job_titles(text):
+    """Extract potential job titles from text"""
+    common_titles = [
+        "Software Engineer", "Product Manager", "Marketing Specialist", "Data Scientist",
+        "Project Manager", "UX Designer", "Sales Executive", "Financial Analyst",
+        "Operations Manager", "Content Writer", "HR Specialist", "Business Analyst"
+    ]
+    
+    found_titles = []
+    for title in common_titles:
+        if title.lower() in text.lower():
+            found_titles.append(title)
+    
+    return found_titles[:3]  # Return top 3
+
+def extract_key_qualifications(text):
+    """Extract key qualifications from text"""
+    qualifications = [
+        "Leadership", "Problem Solving", "Communication", "Project Management",
+        "Software Development", "Data Analysis", "Digital Marketing", "Customer Service",
+        "Strategic Planning", "Design Thinking", "Sales", "Financial Planning"
+    ]
+    
+    found_qualifications = []
+    for qual in qualifications:
+        if qual.lower() in text.lower():
+            found_qualifications.append(qual)
+    
+    return found_qualifications[:5]  # Return top 5
+
+def extract_career_highlights(text):
+    """Extract career highlights from text"""
+    # For demo purposes, we'll look for sentences with achievement indicators
+    achievement_indicators = [
+        "led", "managed", "created", "developed", "implemented",
+        "increased", "improved", "reduced", "achieved", "awarded"
+    ]
+    
+    sentences = re.split(r'[.!?]+', text)
+    highlights = []
+    
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if sentence and any(indicator in sentence.lower() for indicator in achievement_indicators):
+            if len(sentence) > 10 and len(sentence) < 150:  # Reasonable length
+                highlights.append(sentence)
+    
+    return highlights[:5]  # Return top 5
+
+def extract_professional_traits(text):
+    """Extract professional personality traits from text"""
+    traits = [
+        "detail-oriented", "analytical", "creative", "innovative", "strategic",
+        "collaborative", "team player", "self-motivated", "organized", "adaptable",
+        "proactive", "resourceful", "passionate", "dedicated", "results-driven"
+    ]
+    
+    found_traits = []
+    for trait in traits:
+        if trait.lower() in text.lower():
+            found_traits.append(trait)
+    
+    return found_traits[:5]  # Return top 5
+
+def extract_achievements_for_role(text, role, company):
+    """Extract achievements related to a specific role"""
+    # Find paragraphs that might contain the role and company
+    paragraphs = text.split('\n\n')
+    relevant_paragraphs = []
+    
+    for para in paragraphs:
+        if role in para.lower() or company in para.lower():
+            relevant_paragraphs.append(para)
+    
+    # Look for achievement indicators in relevant paragraphs
+    achievements = []
+    indicators = ["increased", "decreased", "improved", "achieved", "delivered", "led", "managed"]
+    
+    for para in relevant_paragraphs:
+        sentences = re.split(r'[.!?]+', para)
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if sentence and any(indicator in sentence.lower() for indicator in indicators):
+                if len(sentence) > 10 and len(sentence) < 200:  # Reasonable length
+                    achievements.append(sentence)
+    
+    return achievements[:5]  # Return top 5
+
+def extract_skills(text):
+    """Extract skills from text"""
+    common_skills = [
+        "Python", "JavaScript", "React", "Project Management", "Data Analysis",
+        "Marketing", "Sales", "Leadership", "Communication", "Design",
+        "SQL", "Excel", "Social Media", "Customer Service", "Consulting",
+        "Java", "C++", "Problem Solving", "Strategic Planning", "Agile",
+        "UX/UI Design", "Product Management", "Content Creation", "SEO",
+        "Financial Analysis", "Machine Learning", "Negotiation", "Public Speaking"
+    ]
+    
+    found_skills = []
+    for skill in common_skills:
+        if skill.lower() in text.lower():
+            found_skills.append(skill)
+    
+    return found_skills
+
+def extract_projects(text):
+    """Extract projects from text"""
+    # Look for project indicators
+    project_indicators = ["project:", "projects:", "project -", "project name:", "developed:", "implemented:"]
+    
+    projects = []
+    lines = text.split('\n')
+    
+    for line in lines:
+        if any(indicator in line.lower() for indicator in project_indicators):
+            # Extract project name
+            for indicator in project_indicators:
+                if indicator in line.lower():
+                    project_part = line.lower().split(indicator)[1].strip()
+                    project_name = project_part.split(",")[0].split("-")[0].split(".")[0].strip()
+                    if project_name and 3 < len(project_name) < 50:
+                        projects.append(project_name.title())
+    
+    # If no projects found with indicators, look for capitalized noun phrases
+    if not projects:
+        words = text.split()
+        for i in range(len(words) - 1):
+            if words[i] == "Project" and i+1 < len(words) and words[i+1][0].isupper():
+                project_name = words[i+1]
+                if i+2 < len(words) and words[i+2][0].isupper():
+                    project_name += " " + words[i+2]
+                projects.append(project_name)
+    
+    return list(set(projects))  # Remove duplicates
+
+def extract_publications(text):
+    """Extract publications or presentations from text"""
+    # Look for publication indicators
+    publication_indicators = ["publication:", "published:", "article:", "journal:", "conference:", "presented:"]
+    
+    publications = []
+    lines = text.split('\n')
+    
+    for line in lines:
+        if any(indicator in line.lower() for indicator in publication_indicators):
+            # Extract publication name
+            for indicator in publication_indicators:
+                if indicator in line.lower():
+                    pub_part = line.lower().split(indicator)[1].strip()
+                    pub_name = pub_part.split(",")[0].split("-")[0].split(".")[0].strip()
+                    if pub_name and 3 < len(pub_name) < 100:
+                        publications.append(pub_name.title())
+    
+    return list(set(publications))  # Remove duplicates
+
 # Missing import
 from datetime import datetime
 
