@@ -1166,6 +1166,277 @@ def extract_publications(text):
 # Missing import
 from datetime import datetime
 
+def optimize_headline(current_headline, resume_text):
+    """Optimize LinkedIn headline based on resume content"""
+    # Extract job titles from resume
+    job_titles = extract_job_titles(resume_text)
+    
+    # Extract key skills or qualifications
+    key_qualifications = extract_key_qualifications(resume_text)
+    
+    # Generate improved headline options
+    options = []
+    
+    if job_titles and key_qualifications:
+        options.append(f"{job_titles[0]} | {key_qualifications[0]} | {key_qualifications[1] if len(key_qualifications) > 1 else ''}")
+        if len(job_titles) > 1:
+            options.append(f"{job_titles[0]} with expertise in {', '.join(key_qualifications[:2])}")
+    
+    return {
+        "current": current_headline,
+        "optimized": options[0] if options else current_headline,
+        "alternatives": options[1:3] if len(options) > 1 else []
+    }
+
+def optimize_summary(current_summary, resume_text):
+    """Optimize LinkedIn summary based on resume content"""
+    # Extract career highlights
+    highlights = extract_career_highlights(resume_text)
+    
+    # Extract professional personality traits
+    traits = extract_professional_traits(resume_text)
+    
+    # Generate improved summary
+    optimized = ""
+    
+    if highlights or traits:
+        intro = "I am a dedicated professional with expertise in "
+        if highlights:
+            intro += ", ".join(highlights[:3])
+        
+        skills_part = ""
+        if traits:
+            skills_part = "\n\nI am known for my " + ", ".join(traits[:3]) + "."
+            
+        experience_part = ""
+        if highlights:
+            experience_part = "\n\nMy background includes:\n• " + "\n• ".join(highlights[:3])
+            
+        closing = "\n\nI am constantly seeking new challenges and opportunities to apply my expertise. Let's connect!"
+        
+        optimized = intro + skills_part + experience_part + closing
+    
+    return {
+        "current": current_summary,
+        "optimized": optimized if optimized else current_summary
+    }
+
+def optimize_experience(current_experience, resume_text):
+    """Optimize LinkedIn experience based on resume content"""
+    # For demo purposes, we'll focus on enhancing descriptions with achievements
+    enhanced_experience = []
+    
+    for exp in current_experience:
+        # Current description
+        current_desc = exp.get("description", "")
+        
+        # Find potential achievements related to this role
+        role_title = exp.get("title", "").lower()
+        company = exp.get("company", "").lower()
+        
+        # Search resume for achievements related to this role
+        achievements = extract_achievements_for_role(resume_text, role_title, company)
+        
+        # Enhanced description with achievements
+        enhanced_desc = current_desc
+        if achievements:
+            if not enhanced_desc:
+                enhanced_desc = "Key achievements:\n"
+            elif not any(char in enhanced_desc for char in "•-*"):
+                enhanced_desc += "\n\nKey achievements:\n"
+            
+            for achievement in achievements[:3]:
+                if achievement not in enhanced_desc:
+                    enhanced_desc += "• " + achievement + "\n"
+        
+        # Add to enhanced experience
+        enhanced_experience.append({
+            "title": exp.get("title", ""),
+            "company": exp.get("company", ""),
+            "current_description": current_desc,
+            "enhanced_description": enhanced_desc
+        })
+    
+    return {
+        "current": current_experience,
+        "optimized": enhanced_experience
+    }
+
+def optimize_skills(current_skills, resume_text):
+    """Optimize LinkedIn skills based on resume content"""
+    # Extract skills from resume
+    resume_skills = extract_skills(resume_text)
+    
+    # Identify missing skills (in resume but not in LinkedIn)
+    current_skills_lower = [skill.lower() for skill in current_skills]
+    missing_skills = [skill for skill in resume_skills if skill.lower() not in current_skills_lower]
+    
+    # Prioritize current skills based on resume emphasis
+    prioritized_skills = []
+    for skill in current_skills:
+        # Check how many times the skill appears in the resume
+        count = resume_text.lower().count(skill.lower())
+        prioritized_skills.append((skill, count))
+    
+    # Sort by count (emphasis in resume)
+    prioritized_skills.sort(key=lambda x: x[1], reverse=True)
+    
+    return {
+        "current": current_skills,
+        "missing": missing_skills[:10],  # Top 10 missing skills
+        "prioritized": [skill for skill, _ in prioritized_skills[:15]]  # Top 15 prioritized skills
+    }
+
+def generate_featured_suggestions(profile_data, resume_text):
+    """Generate suggestions for LinkedIn featured section"""
+    suggestions = []
+    
+    # Extract projects from resume
+    projects = extract_projects(resume_text)
+    if projects:
+        for project in projects[:3]:
+            suggestions.append({
+                "type": "Project",
+                "title": project,
+                "description": "Showcase your work on " + project + " with a detailed post or external link."
+            })
+    
+    # Extract publications or presentations
+    publications = extract_publications(resume_text)
+    if publications:
+        for pub in publications[:2]:
+            suggestions.append({
+                "type": "Publication/Presentation",
+                "title": pub,
+                "description": "Share your insights from " + pub + " to demonstrate thought leadership."
+            })
+    
+    # Add generic suggestions if needed
+    if len(suggestions) < 3:
+        suggestions.append({
+            "type": "Industry Article",
+            "title": "Thought Leadership Piece",
+            "description": "Write an article about current trends in your industry based on your experience."
+        })
+        
+        suggestions.append({
+            "type": "Portfolio",
+            "title": "Work Portfolio",
+            "description": "Create a visual showcase of your best work and professional achievements."
+        })
+    
+    return suggestions
+
+def generate_banner_suggestion(optimized_sections):
+    """Generate LinkedIn banner image suggestion"""
+    # Determine professional field/industry
+    industry = ""
+    experience = optimized_sections.get("experience", {}).get("optimized", [])
+    if experience:
+        title = experience[0].get("title", "").lower()
+        if any(word in title for word in ["develop", "engineer", "program", "code"]):
+            industry = "technology"
+        elif any(word in title for word in ["market", "content", "brand", "social"]):
+            industry = "marketing"
+        elif any(word in title for word in ["design", "ux", "ui", "creative"]):
+            industry = "design"
+        elif any(word in title for word in ["manage", "direct", "lead", "executive"]):
+            industry = "leadership"
+        else:
+            industry = "professional"
+    
+    # Generate suggestion based on industry
+    suggestion = {
+        "theme": "Professional " + industry.capitalize() + " Banner",
+        "elements": [
+            "Clean, minimalist design with professional color scheme",
+            "Subtle illustration or pattern related to your field",
+            "Optional: brief tagline highlighting your expertise"
+        ],
+        "colors": ["#0077B5", "#FFFFFF"] if industry == "technology" else ["#2867B2", "#F5F5F5"]
+    }
+    
+    return suggestion
+
+def generate_branding_plan(optimized_sections, analysis_results):
+    """Generate a 4-week personal branding plan"""
+    weeks = []
+    
+    # Week 1: Profile Optimization
+    weeks.append({
+        "week": 1,
+        "theme": "Profile Enhancement",
+        "tasks": [
+            "Update your headline with the optimized version",
+            "Rewrite your summary using the enhanced template",
+            "Update experience descriptions with achievements",
+            "Add missing skills identified from your resume",
+            "Rearrange skills to prioritize those emphasized in your resume"
+        ]
+    })
+    
+    # Week 2: Content Creation
+    content_ideas = []
+    skills = optimized_sections.get("skills", {}).get("prioritized", [])
+    if skills:
+        content_ideas.append("Create a post about your expertise in " + skills[0])
+        if len(skills) > 1:
+            content_ideas.append("Share insights on how " + skills[0] + " and " + skills[1] + " complement each other")
+    
+    featured = optimized_sections.get("featured", [])
+    if featured:
+        content_ideas.append("Write an article about your work on " + featured[0].get('title', 'your featured project'))
+    
+    weeks.append({
+        "week": 2,
+        "theme": "Content Creation",
+        "posts": content_ideas,
+        "frequency": "2-3 posts this week"
+    })
+    
+    # Week 3: Engagement & Networking
+    weeks.append({
+        "week": 3,
+        "theme": "Engagement & Networking",
+        "tasks": [
+            "Comment thoughtfully on posts from industry leaders",
+            "Share and add insights to relevant industry news",
+            "Connect with 5-10 new professionals in your field",
+            "Engage with posts from your current connections"
+        ],
+        "frequency": "Daily engagement, 1-2 posts this week"
+    })
+    
+    # Week 4: Showcase Expertise
+    expertise_topics = []
+    experience = optimized_sections.get("experience", {}).get("optimized", [])
+    if experience:
+        role = experience[0].get("title", "your profession")
+        expertise_topics.append("Share a 'day in the life' post about your role as a " + role)
+        expertise_topics.append("Create a post about lessons learned in your career journey")
+    
+    weeks.append({
+        "week": 4,
+        "theme": "Showcase Expertise",
+        "posts": expertise_topics,
+        "frequency": "2-3 posts this week",
+        "tasks": [
+            "Implement featured section recommendations",
+            "Request recommendations from colleagues",
+            "Review analytics on your profile views and post engagement",
+            "Adjust strategy based on what content performed best"
+        ]
+    })
+    
+    # Banner image suggestion
+    banner_suggestion = generate_banner_suggestion(optimized_sections)
+    
+    return {
+        "weekly_plan": weeks,
+        "banner_suggestion": banner_suggestion,
+        "posting_schedule": "2-3 posts per week, with daily engagement"
+    }
+
 def map_api_response_to_profile_data(api_response, username):
     """Map LinkedIn API response to our profile data structure"""
     try:
