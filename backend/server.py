@@ -75,7 +75,7 @@ async def fetch_profile(request: ProfileRequest):
         async with httpx.AsyncClient() as client:
             # Fetch profile data
             response = await client.get(
-                f"{LINKEDIN_API_URL}/get-profile?username={username}",
+                f"{LINKEDIN_API_URL}/profile?linkedin_username={username}",
                 headers=headers
             )
             
