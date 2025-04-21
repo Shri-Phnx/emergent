@@ -53,8 +53,14 @@ function App() {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (!profileData) {
+      setUploadError("Please analyze a LinkedIn profile first");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("profile_id", profileData.profile_id);
 
     setUploadLoading(true);
     setUploadError(null);
