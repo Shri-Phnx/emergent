@@ -472,6 +472,59 @@ def analyze_skills(skills):
     
     return min(100, score), feedback
 
+def generate_mock_profile_data(username):
+    """Generate mock LinkedIn profile data for demonstration purposes"""
+    return {
+        "public_identifier": username,
+        "first_name": "John" if username != "williamhgates" else "Bill",
+        "last_name": "Doe" if username != "williamhgates" else "Gates",
+        "full_name": "John Doe" if username != "williamhgates" else "Bill Gates",
+        "headline": "Software Developer at Tech Company" if username != "williamhgates" else "Co-chair, Bill & Melinda Gates Foundation",
+        "summary": "Experienced software developer with a passion for creating innovative solutions." if username != "williamhgates" else "Co-chair of the Bill & Melinda Gates Foundation. Founder of Breakthrough Energy. Co-founder of Microsoft. Voracious reader. Avid traveler.",
+        "country": "United States",
+        "country_full_name": "United States of America",
+        "city": "San Francisco" if username != "williamhgates" else "Seattle",
+        "state": "California" if username != "williamhgates" else "Washington",
+        "experience": [
+            {
+                "company": "Tech Company" if username != "williamhgates" else "Bill & Melinda Gates Foundation",
+                "title": "Senior Software Developer" if username != "williamhgates" else "Co-chair",
+                "description": "Leading the development of key features and improving application performance.",
+                "location": "San Francisco, CA" if username != "williamhgates" else "Seattle, WA",
+                "starts_at": {"month": 6, "year": 2018},
+                "ends_at": None
+            },
+            {
+                "company": "Startup Inc." if username != "williamhgates" else "Microsoft",
+                "title": "Junior Developer" if username != "williamhgates" else "CEO",
+                "description": "Worked on front-end development and user experience design.",
+                "location": "San Francisco, CA" if username != "williamhgates" else "Redmond, WA",
+                "starts_at": {"month": 1, "year": 2015},
+                "ends_at": {"month": 5, "year": 2018}
+            }
+        ],
+        "education": [
+            {
+                "school": "University of Technology" if username != "williamhgates" else "Harvard University",
+                "degree": "Bachelor's Degree" if username != "williamhgates" else "Bachelor of Arts",
+                "field_of_study": "Computer Science" if username != "williamhgates" else "Applied Mathematics",
+                "description": "Graduated with honors. Active in coding club and hackathons.",
+                "start_date": {"year": 2011},
+                "end_date": {"year": 2015}
+            }
+        ],
+        "skills": [
+            "JavaScript" if username != "williamhgates" else "Business Strategy",
+            "React" if username != "williamhgates" else "Leadership",
+            "Node.js" if username != "williamhgates" else "Philanthropy",
+            "Python" if username != "williamhgates" else "Technology",
+            "SQL" if username != "williamhgates" else "Innovation",
+            "Git" if username != "williamhgates" else "Public Speaking",
+            "AWS" if username != "williamhgates" else "Global Health"
+        ],
+        "industry": "Computer Software" if username != "williamhgates" else "Philanthropy"
+    }
+
 def generate_overall_recommendations(analysis):
     """Generate overall recommendations based on the analysis"""
     recommendations = []
