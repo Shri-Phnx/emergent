@@ -190,17 +190,24 @@ def analyze_profile(profile_data):
 
 def analyze_headline(headline):
     """Analyze the headline section"""
-    # Simple analysis rules
     score = 0
     feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
     
-    # Check length
+    # Assess completeness (25 points)
     if headline and len(headline) > 10:
-        score += 25
+        category_scores["completeness"] = 15
+        if len(headline) > 30:
+            category_scores["completeness"] = 25
     else:
         feedback.append("Your headline is too short. Add more relevant information.")
     
-    # Check for keywords
+    # Assess keywords (25 points)
     keyword_count = 0
     keywords = ["leader", "expert", "specialist", "manager", "developer", 
                 "engineer", "professional", "consultant", "strategist"]
@@ -210,18 +217,25 @@ def analyze_headline(headline):
             keyword_count += 1
     
     if keyword_count > 0:
-        score += min(25, keyword_count * 10)
+        category_scores["keywords"] = min(25, keyword_count * 8)
     else:
         feedback.append("Consider adding industry-relevant keywords to your headline.")
     
-    # Check for uniqueness
+    # Assess impact (25 points)
     if headline and any(char in headline for char in "|•★✓✔"):
-        score += 25
+        category_scores["impact"] = 25
         feedback.append("Good use of special characters to make your headline stand out.")
     else:
+        category_scores["impact"] = 10
         feedback.append("Consider using separators (|, •) to structure your headline and make it more scannable.")
     
-    # Final check
+    # Assess relevance (25 points) - placeholder for now
+    category_scores["relevance"] = min(25, (category_scores["keywords"] / 25) * 25)
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
+    
+    # Final assessment
     if score < 25:
         feedback.append("Your headline needs significant improvement to attract attention.")
     elif score < 50:
@@ -231,7 +245,7 @@ def analyze_headline(headline):
     else:
         feedback.append("Your headline is excellent and likely to catch attention.")
     
-    return min(100, score), feedback
+    return min(100, score), feedback, category_scores
 
 def analyze_about(about):
     """Analyze the about section"""
