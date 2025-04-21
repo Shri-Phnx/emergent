@@ -325,24 +325,30 @@ def analyze_experience(experience):
     """Analyze the experience section"""
     score = 0
     feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
     
     if not experience or len(experience) == 0:
         feedback.append("Your experience section is empty. This is a crucial part of your profile.")
-        return 0, feedback
+        return 0, feedback, category_scores
     
-    # Check number of experiences
+    # Assess completeness (25 points)
     num_experiences = len(experience)
     if num_experiences < 2:
+        category_scores["completeness"] = 5
         feedback.append("Consider adding more professional experiences to showcase your career progression.")
-        score += 10
     elif num_experiences < 4:
+        category_scores["completeness"] = 15
         feedback.append("You have a good number of experiences listed.")
-        score += 25
     else:
+        category_scores["completeness"] = 25
         feedback.append("You have a comprehensive list of experiences. Ensure they're all relevant.")
-        score += 30
     
-    # Check for description quality
+    # Check description quality for keyword and impact scoring
     descriptions_with_bullets = 0
     descriptions_with_achievements = 0
     
@@ -360,26 +366,34 @@ def analyze_experience(experience):
                 descriptions_with_achievements += 1
                 break
     
-    if descriptions_with_bullets >= num_experiences / 2:
-        score += 20
-        feedback.append("Good use of bullet points in your experience descriptions.")
-    else:
-        feedback.append("Consider using bullet points to make your experience descriptions more readable.")
-    
+    # Assess impact (25 points)
     if descriptions_with_achievements >= num_experiences / 2:
-        score += 25
+        category_scores["impact"] = 25
         feedback.append("Good focus on achievements in your experience descriptions.")
     else:
+        category_scores["impact"] = 10
         feedback.append("Focus more on achievements rather than responsibilities in your descriptions.")
     
-    # Check for duration gaps
-    has_gaps = False
-    # This would require parsing dates and checking for gaps
+    # Assess keywords (25 points) 
+    if descriptions_with_bullets >= num_experiences / 2:
+        category_scores["keywords"] = 20
+        feedback.append("Good use of bullet points in your experience descriptions.")
+    else:
+        category_scores["keywords"] = 10
+        feedback.append("Consider using bullet points to make your experience descriptions more readable.")
+    
+    # Assess relevance (25 points)
+    # Without a target role, we'll use a basic assessment based on descriptions and duration
+    has_gaps = False  # This would require parsing dates and checking for gaps
     
     if has_gaps:
+        category_scores["relevance"] = 10
         feedback.append("There appear to be gaps in your employment history. Consider explaining these.")
     else:
-        score += 15
+        category_scores["relevance"] = 20
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
     
     # Final assessment
     if score < 30:
@@ -391,7 +405,7 @@ def analyze_experience(experience):
     else:
         feedback.append("Your experience section is excellent and effectively showcases your professional journey.")
     
-    return min(100, score), feedback
+    return min(100, score), feedback, category_scores
 
 def analyze_education(education):
     """Analyze the education section"""
