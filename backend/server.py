@@ -1437,6 +1437,88 @@ def generate_branding_plan(optimized_sections, analysis_results):
         "posting_schedule": "2-3 posts per week, with daily engagement"
     }
 
+@app.post("/api/upload-resume")
+async def upload_resume(profile_id: str = Body(...), file: UploadFile = File(...)):
+    try:
+        # Check if profile exists
+        profile = await db.profile_analyses.find_one({"profile_id": profile_id})
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+        
+        # Read and parse the resume
+        resume_text = await parse_resume(file)
+        if not resume_text:
+            raise HTTPException(status_code=400, detail="Could not extract text from resume")
+        
+        # Optimize LinkedIn sections based on resume
+        optimized_sections = optimize_linkedin_sections(profile["profile_data"], resume_text)
+        
+        # Generate personal branding plan
+        branding_plan = generate_branding_plan(optimized_sections, profile["analysis_results"])
+        
+        # Store results
+        resume_analysis = {
+            "profile_id": profile_id,
+            "resume_text": resume_text,
+            "optimized_sections": optimized_sections,
+            "branding_plan": branding_plan,
+            "created_at": str(datetime.now())
+        }
+        
+        # Insert or update in database
+        await db.resume_analyses.update_one(
+            {"profile_id": profile_id},
+            {"$set": resume_analysis},
+            upsert=True
+        )
+        
+        return {
+            "profile_id": profile_id,
+            "optimized_sections": optimized_sections,
+            "branding_plan": branding_plan
+        }
+        
+    except Exception as e:
+        logger.error(f"Error processing resume: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing resume: {str(e)}")
+
+async def parse_resume(file: UploadFile) -> str:
+    """Extract text from uploaded resume file"""
+    content = await file.read()
+    
+    if file.filename.lower().endswith('.pdf'):
+        # Parse PDF
+        try:
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text() + "\n"
+            return text
+        except Exception as e:
+            logger.error(f"Error parsing PDF: {str(e)}")
+            return ""
+    elif file.filename.lower().endswith(('.doc', '.docx')):
+        # For demo purposes, we'll use a simple extraction
+        # In production, you would use a library like python-docx
+        return content.decode('utf-8', errors='ignore')
+    elif file.filename.lower().endswith('.txt'):
+        return content.decode('utf-8', errors='ignore')
+    else:
+        logger.error(f"Unsupported file format: {file.filename}")
+        return ""
+
+def optimize_linkedin_sections(profile_data: dict, resume_text: str) -> dict:
+    """Optimize LinkedIn sections based on resume content"""
+    optimized_sections = {
+        "headline": optimize_headline(profile_data.get("headline", ""), resume_text),
+        "summary": optimize_summary(profile_data.get("summary", profile_data.get("about", "")), resume_text),
+        "experience": optimize_experience(profile_data.get("experience", []), resume_text),
+        "skills": optimize_skills(profile_data.get("skills", []), resume_text),
+        "featured": generate_featured_suggestions(profile_data, resume_text)
+    }
+    
+    return optimized_sections
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
