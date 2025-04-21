@@ -389,40 +389,113 @@ function App() {
                     <div>
                       <h3 className="text-xl font-semibold mb-3">4-Week Personal Branding Plan</h3>
                       <div className="space-y-4">
-                        {brandingPlan.weekly_plan.map((week, index) => (
-                          <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-gray-700 mb-2">Week {index + 1}</h4>
-                            <ul className="space-y-2">
-                              {week.tasks.map((task, idx) => (
-                                <li key={idx} className="flex items-start">
-                                  <span className="text-blue-500 mr-2">•</span>
-                                  <span className="text-gray-600">{task}</span>
-                                </li>
-                              ))}
-                            </ul>
+                        {brandingPlan.weekly_plan && Array.isArray(brandingPlan.weekly_plan) ? (
+                          brandingPlan.weekly_plan.map((week, index) => (
+                            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                              <h4 className="font-medium text-gray-700 mb-2">Week {week.week || (index + 1)}: {week.theme || 'Branding Activities'}</h4>
+                              {week.tasks && Array.isArray(week.tasks) && (
+                                <div className="mb-3">
+                                  <h5 className="text-sm font-medium text-gray-700 mb-1">Tasks:</h5>
+                                  <ul className="space-y-2">
+                                    {week.tasks.map((task, idx) => (
+                                      <li key={idx} className="flex items-start">
+                                        <span className="text-blue-500 mr-2">•</span>
+                                        <span className="text-gray-600">{task}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              
+                              {week.posts && Array.isArray(week.posts) && (
+                                <div className="mb-3">
+                                  <h5 className="text-sm font-medium text-gray-700 mb-1">Content Ideas:</h5>
+                                  <ul className="space-y-2">
+                                    {week.posts.map((post, idx) => (
+                                      <li key={idx} className="flex items-start">
+                                        <span className="text-blue-500 mr-2">•</span>
+                                        <span className="text-gray-600">{post}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              
+                              {week.frequency && (
+                                <p className="text-sm text-indigo-600 font-medium">{week.frequency}</p>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="bg-gray-50 p-4 rounded-lg">
+                            <p className="text-gray-600">No weekly plan data available</p>
                           </div>
-                        ))}
+                        )}
                       </div>
                     </div>
 
                     <div>
                       <h3 className="text-xl font-semibold mb-3">Profile Banner Suggestion</h3>
                       <div className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-gray-600">{brandingPlan.banner_suggestion}</p>
+                        {brandingPlan.banner_suggestion ? (
+                          typeof brandingPlan.banner_suggestion === 'string' ? (
+                            <p className="text-gray-600">{brandingPlan.banner_suggestion}</p>
+                          ) : (
+                            <div>
+                              <h4 className="font-medium text-gray-700 mb-2">{brandingPlan.banner_suggestion.theme || 'Custom Banner'}</h4>
+                              {brandingPlan.banner_suggestion.elements && Array.isArray(brandingPlan.banner_suggestion.elements) && (
+                                <div className="mb-3">
+                                  <h5 className="text-sm font-medium text-gray-700 mb-1">Recommended Elements:</h5>
+                                  <ul className="space-y-1">
+                                    {brandingPlan.banner_suggestion.elements.map((element, idx) => (
+                                      <li key={idx} className="text-sm text-gray-600 flex items-start">
+                                        <span className="text-blue-500 mr-2">•</span>
+                                        <span>{element}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              {brandingPlan.banner_suggestion.colors && Array.isArray(brandingPlan.banner_suggestion.colors) && (
+                                <div>
+                                  <h5 className="text-sm font-medium text-gray-700 mb-1">Color Palette:</h5>
+                                  <div className="flex gap-2 mt-1">
+                                    {brandingPlan.banner_suggestion.colors.map((color, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="w-6 h-6 rounded-full border border-gray-300"
+                                        style={{ backgroundColor: color }}
+                                        title={color}
+                                      ></div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        ) : (
+                          <p className="text-gray-600">No banner suggestion available</p>
+                        )}
                       </div>
                     </div>
 
                     <div>
                       <h3 className="text-xl font-semibold mb-3">Content Posting Schedule</h3>
                       <div className="bg-gray-50 p-4 rounded-lg">
-                        <ul className="space-y-2">
-                          {brandingPlan.posting_schedule.map((item, index) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-blue-500 mr-2">•</span>
-                              <span className="text-gray-600">{item}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        {typeof brandingPlan.posting_schedule === 'string' ? (
+                          <p className="text-gray-600">{brandingPlan.posting_schedule}</p>
+                        ) : brandingPlan.posting_schedule && Array.isArray(brandingPlan.posting_schedule) ? (
+                          <ul className="space-y-2">
+                            {brandingPlan.posting_schedule.map((item, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-blue-500 mr-2">•</span>
+                                <span className="text-gray-600">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-gray-600">2-3 posts per week, with daily engagement</p>
+                        )}
                       </div>
                     </div>
                   </div>
