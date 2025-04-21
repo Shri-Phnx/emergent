@@ -44,10 +44,58 @@ function App() {
       setProfileData(data.profile_data);
       setAnalysisResults(data.analysis_results);
       setContentSuggestions(data.content_suggestions);
+      
+      // Reset any previous resume analysis results
+      setOptimizedSections(null);
+      setBrandingPlan(null);
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleResumeUpload = async (e) => {
+    e.preventDefault();
+    if (!profileData) {
+      setUploadError("Please analyze your LinkedIn profile first");
+      return;
+    }
+    
+    const file = fileInputRef.current.files[0];
+    if (!file) {
+      setUploadError("Please select a resume file to upload");
+      return;
+    }
+    
+    setUploadLoading(true);
+    setUploadError(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("profile_id", profileData.profile_id);
+      
+      const response = await fetch(`${BACKEND_URL}/api/upload-resume`, {
+        method: "POST",
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to process resume");
+      }
+      
+      const data = await response.json();
+      setOptimizedSections(data.optimized_sections);
+      setBrandingPlan(data.branding_plan);
+      
+      // Switch to the optimization tab to show results
+      setActiveTab("optimization");
+    } catch (err) {
+      setUploadError(err.message);
+    } finally {
+      setUploadLoading(false);
     }
   };
 
