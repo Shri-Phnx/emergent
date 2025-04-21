@@ -3,7 +3,7 @@ import requests
 import os
 from datetime import datetime
 
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL')
+BACKEND_URL = "https://cca0c709-874c-4030-875e-1c7b0cb97979.preview.emergentagent.com"
 
 class LinkedInProfileAnalyzerTests(unittest.TestCase):
     def setUp(self):
