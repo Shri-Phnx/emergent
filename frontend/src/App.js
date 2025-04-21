@@ -201,7 +201,7 @@ function App() {
                             <h4 className="font-medium text-gray-700 capitalize mb-2">
                               {section.replace("_", " ")}
                             </h4>
-                            <p className="text-gray-600">{analysis}</p>
+                            <p className="text-gray-600">{analysis.feedback ? analysis.feedback.join(". ") : ""}</p>
                           </div>
                         ))}
                       </div>
