@@ -229,50 +229,148 @@ function App() {
                   </div>
                 )}
 
-                {activeTab === "optimization" && optimizedSections && (
+                  {activeTab === "optimization" && optimizedSections && (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold mb-3">Resume-Optimized LinkedIn Profile</h3>
-                      <div className="space-y-4">
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <h4 className="font-medium text-gray-700 mb-2">Professional Headline</h4>
-                          <p className="text-gray-600">{optimizedSections.headline}</p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <h4 className="font-medium text-gray-700 mb-2">Summary</h4>
-                          <p className="text-gray-600 whitespace-pre-line">{optimizedSections.summary}</p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <h4 className="font-medium text-gray-700 mb-2">Skills</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {optimizedSections.skills.map((skill, index) => (
-                              <span
-                                key={index}
-                                className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm"
-                              >
-                                {skill}
-                              </span>
-                            ))}
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">Resume-Optimized LinkedIn Profile</h3>
+                      
+                      {/* Headline Optimization */}
+                      {optimizedSections.headline && (
+                        <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                          <h4 className="text-lg font-medium text-gray-800 mb-3">Headline Optimization</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-gray-50 p-4 rounded-md">
+                              <h5 className="font-medium text-gray-700 mb-2">Current Headline</h5>
+                              <p className="text-gray-600">{optimizedSections.headline.current || "No headline provided"}</p>
+                            </div>
+                            <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                              <h5 className="font-medium text-green-700 mb-2">Optimized Headline</h5>
+                              <p className="text-gray-700 font-semibold">{optimizedSections.headline.optimized}</p>
+                              
+                              {optimizedSections.headline.alternatives && optimizedSections.headline.alternatives.length > 0 && (
+                                <div className="mt-3">
+                                  <h6 className="text-sm font-medium text-gray-700">Alternative Options:</h6>
+                                  <ul className="mt-1 space-y-1">
+                                    {optimizedSections.headline.alternatives.map((alt, index) => (
+                                      <li key={index} className="text-sm text-gray-600 flex items-start">
+                                        <span className="mr-1">•</span>
+                                        <span>{alt}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <h4 className="font-medium text-gray-700 mb-2">Experience</h4>
-                          <div className="space-y-4">
-                            {optimizedSections.experience.map((exp, index) => (
-                              <div key={index} className="border-l-2 border-blue-200 pl-4">
-                                <h5 className="font-medium">{exp.title}</h5>
-                                <p className="text-gray-600">{exp.company}</p>
-                                <p className="text-sm text-gray-500">{exp.date}</p>
-                                <ul className="mt-2 list-disc list-inside text-gray-600">
-                                  {exp.highlights.map((highlight, idx) => (
-                                    <li key={idx}>{highlight}</li>
+                      )}
+                      
+                      {/* Summary Optimization */}
+                      {optimizedSections.summary && (
+                        <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                          <h4 className="text-lg font-medium text-gray-800 mb-3">About/Summary Optimization</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-gray-50 p-4 rounded-md">
+                              <h5 className="font-medium text-gray-700 mb-2">Current Summary</h5>
+                              <div className="text-gray-600 whitespace-pre-line">{optimizedSections.summary.current || "No summary provided"}</div>
+                            </div>
+                            <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                              <h5 className="font-medium text-green-700 mb-2">Optimized Summary</h5>
+                              <div className="text-gray-700 whitespace-pre-line">{optimizedSections.summary.optimized}</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Skills Optimization */}
+                      {optimizedSections.skills && (
+                        <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                          <h4 className="text-lg font-medium text-gray-800 mb-3">Skills Optimization</h4>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-gray-50 p-4 rounded-md">
+                              <h5 className="font-medium text-gray-700 mb-2">Current Skills</h5>
+                              <div className="flex flex-wrap gap-2">
+                                {optimizedSections.skills.current && Array.isArray(optimizedSections.skills.current) &&
+                                  optimizedSections.skills.current.map((skill, index) => (
+                                    <span key={index} className="inline-flex bg-gray-200 text-gray-700 rounded-md px-2 py-1 text-sm">
+                                      {skill}
+                                    </span>
                                   ))}
-                                </ul>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                              <h5 className="font-medium text-green-700 mb-2">Prioritized Skills</h5>
+                              <div className="flex flex-wrap gap-2">
+                                {optimizedSections.skills.prioritized && Array.isArray(optimizedSections.skills.prioritized) && 
+                                  optimizedSections.skills.prioritized.map((skill, index) => (
+                                    <span key={index} className="inline-flex bg-green-200 text-green-800 rounded-md px-2 py-1 text-sm">
+                                      {skill}
+                                    </span>
+                                  ))}
+                              </div>
+                            </div>
+                            
+                            <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
+                              <h5 className="font-medium text-blue-700 mb-2">Skills to Add from Resume</h5>
+                              <div className="flex flex-wrap gap-2">
+                                {optimizedSections.skills.missing && Array.isArray(optimizedSections.skills.missing) && optimizedSections.skills.missing.length > 0 ? (
+                                  optimizedSections.skills.missing.map((skill, index) => (
+                                    <span key={index} className="inline-flex bg-blue-200 text-blue-800 rounded-md px-2 py-1 text-sm">
+                                      {skill}
+                                    </span>
+                                  ))
+                                ) : (
+                                  <p className="text-gray-500 text-sm">No missing skills found</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Featured Section Suggestions */}
+                      {optimizedSections.featured && Array.isArray(optimizedSections.featured) && (
+                        <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                          <h4 className="text-lg font-medium text-gray-800 mb-3">Featured Section Optimization</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {optimizedSections.featured.map((item, index) => (
+                              <div key={index} className="bg-indigo-50 p-4 rounded-md border border-indigo-100">
+                                <h5 className="font-medium text-indigo-700 mb-1">{item.type}: {item.title}</h5>
+                                <p className="text-gray-600 text-sm">{item.description}</p>
                               </div>
                             ))}
                           </div>
                         </div>
-                      </div>
+                      )}
+                      
+                      {/* Experience Enhancement */}
+                      {optimizedSections.experience && optimizedSections.experience.optimized && Array.isArray(optimizedSections.experience.optimized) && (
+                        <div className="border border-gray-200 rounded-lg p-5 bg-white">
+                          <h4 className="text-lg font-medium text-gray-800 mb-4">Experience Enhancement</h4>
+                          {optimizedSections.experience.optimized.map((exp, index) => (
+                            <div key={index} className="mb-6 last:mb-0">
+                              <h5 className="font-medium text-gray-800 mb-1">{exp.title} at {exp.company}</h5>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                                <div className="bg-gray-50 p-4 rounded-md">
+                                  <h6 className="text-sm font-medium text-gray-700 mb-2">Current Description</h6>
+                                  <div className="text-gray-600 text-sm whitespace-pre-line">
+                                    {exp.current_description || "No description provided"}
+                                  </div>
+                                </div>
+                                <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                                  <h6 className="text-sm font-medium text-green-700 mb-2">Enhanced Description</h6>
+                                  <div className="text-gray-700 text-sm whitespace-pre-line">
+                                    {exp.enhanced_description}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
