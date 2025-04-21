@@ -1437,6 +1437,10 @@ def generate_branding_plan(optimized_sections, analysis_results):
         "posting_schedule": "2-3 posts per week, with daily engagement"
     }
 
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()
+
 def map_api_response_to_profile_data(api_response, username):
     """Map LinkedIn API response to our profile data structure"""
     try:
