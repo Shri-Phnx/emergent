@@ -549,6 +549,7 @@ function App() {
           </section>
         )}
 
+        </div>
         <section className="mt-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg shadow-md p-6 text-white">
           <h2 className="text-2xl font-semibold mb-3">Why Optimize Your LinkedIn Profile?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
