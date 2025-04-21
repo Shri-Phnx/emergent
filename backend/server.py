@@ -682,63 +682,6 @@ def map_api_response_to_profile_data(api_response, username):
         # Fall back to mock data if mapping fails
         return generate_mock_profile_data(username)
 
-def map_api_response_to_profile_data(api_response, username):
-    """Map LinkedIn API response to our profile data structure"""
-    try:
-        profile_data = {
-            "public_identifier": username,
-            "first_name": api_response.get("first_name", ""),
-            "last_name": api_response.get("last_name", ""),
-            "full_name": api_response.get("full_name", ""),
-            "headline": api_response.get("headline", ""),
-            "summary": api_response.get("summary", api_response.get("about", "")),
-            "country": api_response.get("country", ""),
-            "country_full_name": api_response.get("country_full_name", ""),
-            "city": api_response.get("city", ""),
-            "state": api_response.get("state", ""),
-            "industry": api_response.get("industry", ""),
-            "experience": [],
-            "education": [],
-            "skills": []
-        }
-
-        # Map experience
-        if "experience" in api_response:
-            for exp in api_response["experience"]:
-                experience = {
-                    "company": exp.get("company", ""),
-                    "title": exp.get("title", ""),
-                    "description": exp.get("description", ""),
-                    "location": exp.get("location", ""),
-                    "starts_at": exp.get("starts_at", {}),
-                    "ends_at": exp.get("ends_at")
-                }
-                profile_data["experience"].append(experience)
-
-        # Map education
-        if "education" in api_response:
-            for edu in api_response["education"]:
-                education = {
-                    "school": edu.get("school", ""),
-                    "degree": edu.get("degree", ""),
-                    "field_of_study": edu.get("field_of_study", ""),
-                    "description": edu.get("description", ""),
-                    "start_date": edu.get("start_date", {}),
-                    "end_date": edu.get("end_date", {})
-                }
-                profile_data["education"].append(education)
-
-        # Map skills
-        if "skills" in api_response:
-            profile_data["skills"] = [skill for skill in api_response["skills"] if skill]
-
-        return profile_data
-
-    except Exception as e:
-        logger.error(f"Error mapping API response: {str(e)}")
-        # Fall back to mock data if mapping fails
-        return generate_mock_profile_data(username)
-
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
