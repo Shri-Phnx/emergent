@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -6,11 +6,16 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 function App() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [analysisResults, setAnalysisResults] = useState(null);
   const [contentSuggestions, setContentSuggestions] = useState(null);
   const [activeTab, setActiveTab] = useState("analysis");
+  const [optimizedSections, setOptimizedSections] = useState(null);
+  const [brandingPlan, setBrandingPlan] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
