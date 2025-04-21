@@ -117,9 +117,10 @@ def analyze_profile(profile_data):
             "feedback": headline_feedback
         }
     
-    # Analyze about section
-    if "about" in profile_data:
-        about_score, about_feedback = analyze_about(profile_data["about"])
+    # Analyze about section (in some APIs it's called "summary")
+    about_text = profile_data.get("about", profile_data.get("summary", ""))
+    if about_text:
+        about_score, about_feedback = analyze_about(about_text)
         analysis["sections"]["about"] = {
             "score": about_score,
             "feedback": about_feedback
