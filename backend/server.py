@@ -59,13 +59,15 @@ async def root():
 
 @app.post("/api/fetch-profile")
 async def fetch_profile(request: ProfileRequest):
+    # Extract username from LinkedIn URL
+    if "linkedin.com/in/" in request.linkedin_url:
+        username = request.linkedin_url.split("linkedin.com/in/")[1].split("/")[0].split("?")[0]
+        logger.info(f"Extracted username: {username} from URL: {request.linkedin_url}")
+    else:
+        logger.warning(f"Invalid LinkedIn URL format: {request.linkedin_url}")
+        raise HTTPException(status_code=400, detail="Invalid LinkedIn URL format")
+        
     try:
-        # Extract username from LinkedIn URL
-        if "linkedin.com/in/" in request.linkedin_url:
-            username = request.linkedin_url.split("linkedin.com/in/")[1].split("/")[0].split("?")[0]
-            logger.info(f"Extracted username: {username} from URL: {request.linkedin_url}")
-        else:
-            raise HTTPException(status_code=400, detail="Invalid LinkedIn URL format")
         
         # For demo purposes, use mock data instead of making an API call
         logger.info(f"Using mock data for LinkedIn profile: {username}")
