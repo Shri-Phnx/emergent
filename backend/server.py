@@ -50,11 +50,21 @@ LINKEDIN_API_URL = f"https://{LINKEDIN_API_HOST}"
 class ProfileRequest(BaseModel):
     linkedin_url: str
 
+class ResumeUploadRequest(BaseModel):
+    profile_id: str
+
 class ProfileAnalysis(BaseModel):
     profile_id: str
     linkedin_url: str
     analysis_results: dict
     content_suggestions: list
+    created_at: str
+    
+class ResumeAnalysis(BaseModel):
+    profile_id: str
+    resume_text: str
+    optimized_sections: dict
+    branding_plan: dict
     created_at: str
 
 @app.get("/api/")
