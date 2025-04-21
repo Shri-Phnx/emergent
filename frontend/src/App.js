@@ -109,8 +109,9 @@ function App() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Analyze Your LinkedIn Profile</h2>
+        <div className="space-y-8">
+          <section className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Analyze Your LinkedIn Profile</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="linkedin-url" className="block text-gray-700 mb-2">
