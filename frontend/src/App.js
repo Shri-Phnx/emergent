@@ -314,7 +314,7 @@ function App() {
                     </ul>
                   </div>
                 </div>
-              ) : (
+              ) : activeTab === "content" ? (
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">Content Suggestions for LinkedIn Posts</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -329,7 +329,219 @@ function App() {
                     ))}
                   </div>
                 </div>
-              )}
+              ) : activeTab === "optimization" ? (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Resume-Optimized LinkedIn Profile</h3>
+                  
+                  {/* Headline Optimization */}
+                  <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                    <h4 className="text-lg font-medium text-gray-800 mb-3">Headline Optimization</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-gray-50 p-4 rounded-md">
+                        <h5 className="font-medium text-gray-700 mb-2">Current Headline</h5>
+                        <p className="text-gray-600">{optimizedSections.headline.current || "No headline provided"}</p>
+                      </div>
+                      <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                        <h5 className="font-medium text-green-700 mb-2">Optimized Headline</h5>
+                        <p className="text-gray-700 font-semibold">{optimizedSections.headline.optimized}</p>
+                        
+                        {optimizedSections.headline.alternatives && optimizedSections.headline.alternatives.length > 0 && (
+                          <div className="mt-3">
+                            <h6 className="text-sm font-medium text-gray-700">Alternative Options:</h6>
+                            <ul className="mt-1 space-y-1">
+                              {optimizedSections.headline.alternatives.map((alt, index) => (
+                                <li key={index} className="text-sm text-gray-600 flex items-start">
+                                  <span className="mr-1">•</span>
+                                  <span>{alt}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Summary Optimization */}
+                  <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                    <h4 className="text-lg font-medium text-gray-800 mb-3">About/Summary Optimization</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-gray-50 p-4 rounded-md">
+                        <h5 className="font-medium text-gray-700 mb-2">Current Summary</h5>
+                        <div className="text-gray-600 whitespace-pre-line">{optimizedSections.summary.current || "No summary provided"}</div>
+                      </div>
+                      <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                        <h5 className="font-medium text-green-700 mb-2">Optimized Summary</h5>
+                        <div className="text-gray-700 whitespace-pre-line">{optimizedSections.summary.optimized}</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Skills Optimization */}
+                  <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                    <h4 className="text-lg font-medium text-gray-800 mb-3">Skills Optimization</h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="bg-gray-50 p-4 rounded-md">
+                        <h5 className="font-medium text-gray-700 mb-2">Current Skills</h5>
+                        <div className="flex flex-wrap gap-2">
+                          {optimizedSections.skills.current.map((skill, index) => (
+                            <span key={index} className="inline-flex bg-gray-200 text-gray-700 rounded-md px-2 py-1 text-sm">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                        <h5 className="font-medium text-green-700 mb-2">Prioritized Skills</h5>
+                        <div className="flex flex-wrap gap-2">
+                          {optimizedSections.skills.prioritized.map((skill, index) => (
+                            <span key={index} className="inline-flex bg-green-200 text-green-800 rounded-md px-2 py-1 text-sm">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
+                        <h5 className="font-medium text-blue-700 mb-2">Skills to Add from Resume</h5>
+                        <div className="flex flex-wrap gap-2">
+                          {optimizedSections.skills.missing.length > 0 ? (
+                            optimizedSections.skills.missing.map((skill, index) => (
+                              <span key={index} className="inline-flex bg-blue-200 text-blue-800 rounded-md px-2 py-1 text-sm">
+                                {skill}
+                              </span>
+                            ))
+                          ) : (
+                            <p className="text-gray-500 text-sm">No missing skills found</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Featured Section Suggestions */}
+                  <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                    <h4 className="text-lg font-medium text-gray-800 mb-3">Featured Section Optimization</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {optimizedSections.featured.map((item, index) => (
+                        <div key={index} className="bg-indigo-50 p-4 rounded-md border border-indigo-100">
+                          <h5 className="font-medium text-indigo-700 mb-1">{item.type}: {item.title}</h5>
+                          <p className="text-gray-600 text-sm">{item.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Experience Enhancement */}
+                  <div className="border border-gray-200 rounded-lg p-5 bg-white">
+                    <h4 className="text-lg font-medium text-gray-800 mb-4">Experience Enhancement</h4>
+                    {optimizedSections.experience.optimized.map((exp, index) => (
+                      <div key={index} className="mb-6 last:mb-0">
+                        <h5 className="font-medium text-gray-800 mb-1">{exp.title} at {exp.company}</h5>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                          <div className="bg-gray-50 p-4 rounded-md">
+                            <h6 className="text-sm font-medium text-gray-700 mb-2">Current Description</h6>
+                            <div className="text-gray-600 text-sm whitespace-pre-line">
+                              {exp.current_description || "No description provided"}
+                            </div>
+                          </div>
+                          <div className="bg-green-50 p-4 rounded-md border border-green-100">
+                            <h6 className="text-sm font-medium text-green-700 mb-2">Enhanced Description</h6>
+                            <div className="text-gray-700 text-sm whitespace-pre-line">
+                              {exp.enhanced_description}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : activeTab === "branding" ? (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Personal Branding Plan</h3>
+                  
+                  {/* Banner Suggestion */}
+                  <div className="mb-8 border border-gray-200 rounded-lg p-5 bg-white">
+                    <h4 className="text-lg font-medium text-gray-800 mb-3">Banner Image Suggestion</h4>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-md border border-blue-100">
+                      <h5 className="font-medium text-blue-700 mb-2">{brandingPlan.banner_suggestion.theme}</h5>
+                      <div className="mb-3">
+                        <h6 className="text-sm font-medium text-gray-700 mb-1">Recommended Elements:</h6>
+                        <ul className="space-y-1">
+                          {brandingPlan.banner_suggestion.elements.map((element, index) => (
+                            <li key={index} className="text-sm text-gray-600 flex items-start">
+                              <span className="mr-1 text-blue-500">•</span>
+                              <span>{element}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h6 className="text-sm font-medium text-gray-700 mb-1">Color Palette:</h6>
+                        <div className="flex gap-2 mt-1">
+                          {brandingPlan.banner_suggestion.colors.map((color, index) => (
+                            <div 
+                              key={index}
+                              className="w-8 h-8 rounded-full border border-gray-300" 
+                              style={{ backgroundColor: color }}
+                              title={color}
+                            ></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* 4-Week Plan */}
+                  <div className="border border-gray-200 rounded-lg p-5 bg-white">
+                    <h4 className="text-lg font-medium text-gray-800 mb-4">4-Week Branding Plan</h4>
+                    <p className="text-gray-600 mb-5">{brandingPlan.posting_schedule}</p>
+                    
+                    <div className="space-y-6">
+                      {brandingPlan.weekly_plan.map((week) => (
+                        <div key={week.week} className="border-l-4 border-indigo-500 pl-4 py-1">
+                          <h5 className="font-medium text-gray-800 mb-2">Week {week.week}: {week.theme}</h5>
+                          
+                          {week.tasks && (
+                            <div className="mb-3">
+                              <h6 className="text-sm font-medium text-gray-700 mb-1">Tasks:</h6>
+                              <ul className="space-y-1">
+                                {week.tasks.map((task, index) => (
+                                  <li key={index} className="text-sm text-gray-600 flex items-start">
+                                    <span className="mr-1 text-indigo-500">✓</span>
+                                    <span>{task}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {week.posts && (
+                            <div className="mb-3">
+                              <h6 className="text-sm font-medium text-gray-700 mb-1">Content Ideas:</h6>
+                              <ul className="space-y-1">
+                                {week.posts.map((post, index) => (
+                                  <li key={index} className="text-sm text-gray-600 flex items-start">
+                                    <span className="mr-1 text-indigo-500">•</span>
+                                    <span>{post}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {week.frequency && (
+                            <p className="text-sm text-indigo-600 font-medium">{week.frequency}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </section>
         )}
