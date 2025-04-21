@@ -138,6 +138,42 @@ function App() {
         </section>
 
         {profileData && analysisResults && (
+          <section className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Optimize with Your Resume</h2>
+            <p className="text-gray-600 mb-4">Upload your resume to get personalized improvement suggestions for your LinkedIn profile.</p>
+            
+            <form onSubmit={handleResumeUpload} className="space-y-4">
+              <div>
+                <label htmlFor="resume-file" className="block text-gray-700 mb-2">
+                  Select your resume file (PDF, DOC, DOCX, or TXT)
+                </label>
+                <input
+                  id="resume-file"
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".pdf,.doc,.docx,.txt"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700"
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={uploadLoading || !profileData}
+                className="px-6 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {uploadLoading ? "Processing..." : "Optimize My Profile"}
+              </button>
+              
+              {!profileData && (
+                <p className="text-amber-600 text-sm mt-2">Please analyze your LinkedIn profile first.</p>
+              )}
+              
+              {uploadError && (
+                <div className="mt-2 p-3 bg-red-100 text-red-700 rounded-md">{uploadError}</div>
+              )}
+            </form>
+          </section>
+          
           <section className="bg-white rounded-lg shadow-md p-6">
             <div className="flex border-b border-gray-200">
               <button
@@ -156,6 +192,26 @@ function App() {
               >
                 Content Suggestions
               </button>
+              {optimizedSections && (
+                <button
+                  className={`px-4 py-2 font-medium ${
+                    activeTab === "optimization" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  onClick={() => setActiveTab("optimization")}
+                >
+                  Optimized Profile
+                </button>
+              )}
+              {brandingPlan && (
+                <button
+                  className={`px-4 py-2 font-medium ${
+                    activeTab === "branding" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  onClick={() => setActiveTab("branding")}
+                >
+                  Branding Plan
+                </button>
+              )}
             </div>
 
             <div className="mt-6">
