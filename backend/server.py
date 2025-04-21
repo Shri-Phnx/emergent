@@ -411,46 +411,60 @@ def analyze_education(education):
     """Analyze the education section"""
     score = 0
     feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
     
     if not education or len(education) == 0:
         feedback.append("Your education section is empty. Consider adding your educational background.")
-        return 0, feedback
+        return 0, feedback, category_scores
     
-    # Check completeness
+    # Assess completeness (25 points)
     complete_entries = 0
     for edu in education:
         if all(key in edu and edu[key] for key in ["school", "degree", "field_of_study", "start_date", "end_date"]):
             complete_entries += 1
     
     if complete_entries == len(education):
-        score += 40
+        category_scores["completeness"] = 25
         feedback.append("Your education entries are complete with all relevant information.")
     else:
-        score += 20
+        category_scores["completeness"] = 12
         feedback.append("Some of your education entries are missing information. Consider completing them.")
     
-    # Check for description/activities
+    # Assess impact (25 points) - Check for descriptions/activities
     entries_with_description = 0
     for edu in education:
         if "description" in edu and edu["description"] and len(edu["description"]) > 50:
             entries_with_description += 1
     
     if entries_with_description > 0:
-        score += 30
+        category_scores["impact"] = 25
         feedback.append("Good job including details about your educational activities and achievements.")
     else:
+        category_scores["impact"] = 10
         feedback.append("Consider adding descriptions to your education entries highlighting relevant coursework, achievements, or activities.")
     
-    # Check for recent education/continuous learning
+    # Assess relevance (25 points) - Check for recency and continuous learning
     has_recent_education = False
     # This would require parsing dates
     
     if has_recent_education:
-        score += 20
+        category_scores["relevance"] = 25
         feedback.append("Your commitment to continuous learning is evident from your recent education.")
     else:
+        category_scores["relevance"] = 15
         feedback.append("Consider adding recent courses or certifications to demonstrate continuous learning.")
-        score += 10
+    
+    # Assess keywords (25 points) - Check for education-related keywords
+    # Simplified approach for now
+    category_scores["keywords"] = 15
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
     
     # Final assessment
     if score < 30:
@@ -462,7 +476,7 @@ def analyze_education(education):
     else:
         feedback.append("Your education section is excellent and effectively showcases your academic background.")
     
-    return min(100, score), feedback
+    return min(100, score), feedback, category_scores
 
 def analyze_skills(skills):
     """Analyze the skills section"""
