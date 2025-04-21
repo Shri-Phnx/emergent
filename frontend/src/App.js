@@ -39,7 +39,10 @@ function App() {
       }
 
       const data = await response.json();
-      setProfileData(data.profile_data);
+      setProfileData({
+        ...data.profile_data,
+        profile_id: data.profile_id
+      });
       setAnalysisResults(data.analysis_results);
       setContentSuggestions(data.content_suggestions);
     } catch (err) {
