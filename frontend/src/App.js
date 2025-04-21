@@ -120,9 +120,33 @@ function App() {
                       <span className="text-lg font-semibold">{Math.round(analysisResults.overall_score)}%</span>
                     </div>
                   </div>
+                  
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Scoring Categories</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                      {Object.entries(analysisResults.score_categories).map(([category, score]) => (
+                        <div key={category} className="bg-white shadow-sm rounded-lg p-4 border border-gray-200">
+                          <h5 className="text-md font-medium text-gray-700 capitalize mb-1">{category}</h5>
+                          <div className="flex items-center">
+                            <div className="w-full bg-gray-200 rounded-full h-3 mr-2">
+                              <div 
+                                className={`h-3 rounded-full ${
+                                  category === "completeness" ? "bg-green-500" : 
+                                  category === "relevance" ? "bg-blue-500" :
+                                  category === "impact" ? "bg-purple-500" : "bg-yellow-500"
+                                }`}
+                                style={{ width: `${score}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-semibold">{Math.round(score)}/25</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
                   <div className="mb-6">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Section Scores</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Section Analysis</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {Object.entries(analysisResults.sections).map(([section, data]) => (
                         <div key={section} className="border border-gray-200 rounded-md p-4">
@@ -136,6 +160,26 @@ function App() {
                               style={{ width: `${data.score}%` }}
                             ></div>
                           </div>
+                          
+                          {data.category_scores && (
+                            <div className="grid grid-cols-2 gap-2 mb-3">
+                              {Object.entries(data.category_scores).map(([category, score]) => (
+                                <div key={category} className="flex items-center">
+                                  <div className="w-2 h-2 rounded-full mr-1.5 flex-shrink-0" 
+                                    style={{
+                                      backgroundColor: 
+                                        category === "completeness" ? "#10B981" : 
+                                        category === "relevance" ? "#3B82F6" :
+                                        category === "impact" ? "#8B5CF6" : "#F59E0B"
+                                    }}
+                                  ></div>
+                                  <span className="text-xs text-gray-600 capitalize mr-1">{category}:</span>
+                                  <span className="text-xs font-medium">{Math.round(score)}/25</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
                           <ul className="space-y-1 text-sm text-gray-600">
                             {data.feedback.map((item, index) => (
                               <li key={index} className="flex items-start">
