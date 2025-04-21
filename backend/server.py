@@ -63,53 +63,38 @@ async def fetch_profile(request: ProfileRequest):
         # Extract username from LinkedIn URL
         if "linkedin.com/in/" in request.linkedin_url:
             username = request.linkedin_url.split("linkedin.com/in/")[1].split("/")[0].split("?")[0]
+            logger.info(f"Extracted username: {username} from URL: {request.linkedin_url}")
         else:
             raise HTTPException(status_code=400, detail="Invalid LinkedIn URL format")
         
-        # Fetch profile data from LinkedIn API
-        headers = {
-            "x-rapidapi-host": LINKEDIN_API_HOST,
-            "x-rapidapi-key": LINKEDIN_API_KEY
+        # For demo purposes, use mock data instead of making an API call
+        logger.info(f"Using mock data for LinkedIn profile: {username}")
+        profile_data = generate_mock_profile_data(username)
+        
+        # Analyze the profile
+        analysis_results = analyze_profile(profile_data)
+        
+        # Generate content suggestions
+        content_suggestions = generate_content_suggestions(profile_data, analysis_results)
+        
+        # Store results in database
+        profile_analysis = {
+            "profile_id": str(uuid.uuid4()),
+            "linkedin_url": request.linkedin_url,
+            "profile_data": profile_data,
+            "analysis_results": analysis_results,
+            "content_suggestions": content_suggestions,
+            "created_at": str(datetime.now())
         }
         
-        async with httpx.AsyncClient() as client:
-            # Fetch profile data
-            response = await client.get(
-                f"{LINKEDIN_API_URL}/profile?linkedin_username={username}",
-                headers=headers
-            )
-            
-            if response.status_code != 200:
-                logger.error(f"LinkedIn API error: {response.text}")
-                raise HTTPException(status_code=response.status_code, 
-                                   detail=f"LinkedIn API error: {response.text}")
-            
-            profile_data = response.json()
-            
-            # Analyze the profile
-            analysis_results = analyze_profile(profile_data)
-            
-            # Generate content suggestions
-            content_suggestions = generate_content_suggestions(profile_data, analysis_results)
-            
-            # Store results in database
-            profile_analysis = {
-                "profile_id": str(uuid.uuid4()),
-                "linkedin_url": request.linkedin_url,
-                "profile_data": profile_data,
-                "analysis_results": analysis_results,
-                "content_suggestions": content_suggestions,
-                "created_at": str(datetime.now())
-            }
-            
-            await db.profile_analyses.insert_one(profile_analysis)
-            
-            return {
-                "profile_id": profile_analysis["profile_id"],
-                "profile_data": profile_data,
-                "analysis_results": analysis_results,
-                "content_suggestions": content_suggestions
-            }
+        await db.profile_analyses.insert_one(profile_analysis)
+        
+        return {
+            "profile_id": profile_analysis["profile_id"],
+            "profile_data": profile_data,
+            "analysis_results": analysis_results,
+            "content_suggestions": content_suggestions
+        }
             
     except Exception as e:
         logger.error(f"Error processing LinkedIn profile: {str(e)}")
