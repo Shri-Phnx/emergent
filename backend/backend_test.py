@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get the backend URL from environment variable
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL')
+BACKEND_URL = "https://cca0c709-874c-4030-875e-1c7b0cb97979.preview.emergentagent.com"
 
 class TestLinkedInProfileAnalyzer:
     def test_root_endpoint(self):
