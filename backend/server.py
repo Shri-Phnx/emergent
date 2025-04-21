@@ -131,57 +131,124 @@ async def fetch_profile(request: ProfileRequest):
 
 def analyze_profile(profile_data):
     """
-    Analyze LinkedIn profile data and provide section-by-section feedback
+    Analyze LinkedIn profile data and provide comprehensive feedback
     """
     analysis = {
         "overall_score": 0,
+        "score_categories": {
+            "completeness": 0,
+            "relevance": 0,
+            "impact": 0,
+            "keywords": 0
+        },
         "sections": {}
     }
     
     # Analyze headline
     if "headline" in profile_data:
-        headline_score, headline_feedback = analyze_headline(profile_data["headline"])
+        headline_score, headline_feedback, headline_category_scores = analyze_headline(profile_data["headline"])
         analysis["sections"]["headline"] = {
             "score": headline_score,
-            "feedback": headline_feedback
+            "feedback": headline_feedback,
+            "category_scores": headline_category_scores
         }
     
     # Analyze about section (in some APIs it's called "summary")
     about_text = profile_data.get("about", profile_data.get("summary", ""))
     if about_text:
-        about_score, about_feedback = analyze_about(about_text)
+        about_score, about_feedback, about_category_scores = analyze_about(about_text)
         analysis["sections"]["about"] = {
             "score": about_score,
-            "feedback": about_feedback
+            "feedback": about_feedback,
+            "category_scores": about_category_scores
         }
     
     # Analyze experience
     if "experience" in profile_data:
-        exp_score, exp_feedback = analyze_experience(profile_data["experience"])
+        exp_score, exp_feedback, exp_category_scores = analyze_experience(profile_data["experience"])
         analysis["sections"]["experience"] = {
             "score": exp_score,
-            "feedback": exp_feedback
+            "feedback": exp_feedback,
+            "category_scores": exp_category_scores
         }
     
     # Analyze education
     if "education" in profile_data:
-        edu_score, edu_feedback = analyze_education(profile_data["education"])
+        edu_score, edu_feedback, edu_category_scores = analyze_education(profile_data["education"])
         analysis["sections"]["education"] = {
             "score": edu_score,
-            "feedback": edu_feedback
+            "feedback": edu_feedback,
+            "category_scores": edu_category_scores
         }
     
     # Analyze skills
     if "skills" in profile_data:
-        skills_score, skills_feedback = analyze_skills(profile_data["skills"])
+        skills_score, skills_feedback, skills_category_scores = analyze_skills(profile_data["skills"])
         analysis["sections"]["skills"] = {
             "score": skills_score,
-            "feedback": skills_feedback
+            "feedback": skills_feedback,
+            "category_scores": skills_category_scores
         }
     
-    # Calculate overall score (average of section scores)
-    section_scores = [section["score"] for section in analysis["sections"].values()]
-    analysis["overall_score"] = sum(section_scores) / len(section_scores) if section_scores else 0
+    # Analyze certifications
+    certifications = profile_data.get("certifications", [])
+    cert_score, cert_feedback, cert_category_scores = analyze_certifications(certifications)
+    analysis["sections"]["certifications"] = {
+        "score": cert_score,
+        "feedback": cert_feedback,
+        "category_scores": cert_category_scores
+    }
+    
+    # Analyze recommendations
+    recommendations = profile_data.get("recommendations", [])
+    rec_score, rec_feedback, rec_category_scores = analyze_recommendations(recommendations)
+    analysis["sections"]["recommendations"] = {
+        "score": rec_score,
+        "feedback": rec_feedback,
+        "category_scores": rec_category_scores
+    }
+    
+    # Analyze visuals (profile picture and banner)
+    visuals = {
+        "has_profile_image": profile_data.get("has_profile_image", False),
+        "has_banner": profile_data.get("has_banner", False)
+    }
+    visuals_score, visuals_feedback, visuals_category_scores = analyze_visuals(visuals)
+    analysis["sections"]["visuals"] = {
+        "score": visuals_score,
+        "feedback": visuals_feedback,
+        "category_scores": visuals_category_scores
+    }
+    
+    # Analyze featured section
+    featured = profile_data.get("featured", [])
+    featured_score, featured_feedback, featured_category_scores = analyze_featured(featured)
+    analysis["sections"]["featured"] = {
+        "score": featured_score,
+        "feedback": featured_feedback,
+        "category_scores": featured_category_scores
+    }
+    
+    # Analyze activity
+    activity = profile_data.get("activity", [])
+    activity_score, activity_feedback, activity_category_scores = analyze_activity(activity)
+    analysis["sections"]["activity"] = {
+        "score": activity_score,
+        "feedback": activity_feedback,
+        "category_scores": activity_category_scores
+    }
+    
+    # Calculate category scores by averaging across all sections
+    for category in ["completeness", "relevance", "impact", "keywords"]:
+        category_scores = [
+            section["category_scores"][category] 
+            for section in analysis["sections"].values() 
+            if "category_scores" in section and category in section["category_scores"]
+        ]
+        analysis["score_categories"][category] = sum(category_scores) / len(category_scores) if category_scores else 0
+    
+    # Calculate overall score (sum of category scores)
+    analysis["overall_score"] = sum(analysis["score_categories"].values())
     
     # Provide overall recommendations
     analysis["overall_recommendations"] = generate_overall_recommendations(analysis)
