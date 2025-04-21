@@ -68,10 +68,37 @@ async def fetch_profile(request: ProfileRequest):
         raise HTTPException(status_code=400, detail="Invalid LinkedIn URL format")
         
     try:
+        # Attempt to fetch profile data from LinkedIn API
+        headers = {
+            "x-rapidapi-host": LINKEDIN_API_HOST,
+            "x-rapidapi-key": LINKEDIN_API_KEY
+        }
         
-        # For demo purposes, use mock data instead of making an API call
-        logger.info(f"Using mock data for LinkedIn profile: {username}")
-        profile_data = generate_mock_profile_data(username)
+        async with httpx.AsyncClient() as client:
+            # Try to fetch using profile-details endpoint
+            try:
+                logger.info(f"Attempting to fetch LinkedIn profile data for: {username}")
+                api_url = f"{LINKEDIN_API_URL}/profile-details?linkedin_id={username}"
+                logger.info(f"API URL: {api_url}")
+                
+                response = await client.get(api_url, headers=headers)
+                
+                if response.status_code == 200:
+                    logger.info("Successfully fetched profile data from LinkedIn API")
+                    api_profile_data = response.json()
+                    
+                    # Map API response to our profile data structure
+                    profile_data = map_api_response_to_profile_data(api_profile_data, username)
+                else:
+                    logger.warning(f"LinkedIn API returned status code: {response.status_code}")
+                    logger.warning(f"API Response: {response.text}")
+                    logger.warning("Falling back to mock data")
+                    profile_data = generate_mock_profile_data(username)
+                    
+            except Exception as api_error:
+                logger.error(f"Error fetching from LinkedIn API: {str(api_error)}")
+                logger.warning("Falling back to mock data")
+                profile_data = generate_mock_profile_data(username)
         
         # Analyze the profile
         analysis_results = analyze_profile(profile_data)
