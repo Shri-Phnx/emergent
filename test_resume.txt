@@ -1,19 +1,19 @@
 
         PROFESSIONAL SUMMARY
-        Experienced technology leader with a passion for innovation and philanthropy.
+        Experienced software engineer with a passion for developing innovative solutions.
 
         EXPERIENCE
-        Co-chair, Bill & Melinda Gates Foundation
-        - Led global health initiatives
-        - Managed multi-billion dollar programs
-        - Developed strategic partnerships
+        Senior Software Engineer, Tech Corp
+        2020 - Present
+        - Led development of cloud-based applications
+        - Improved system performance by 40%
+        - Managed team of 5 developers
 
-        CEO, Microsoft Corporation
-        - Founded and grew company to industry leader
-        - Developed Windows operating system
-        - Led product innovation and strategy
+        EDUCATION
+        BS Computer Science
+        University of Technology
+        2016-2020
 
         SKILLS
-        Leadership, Strategic Planning, Technology Innovation, Public Speaking,
-        Philanthropy, Business Strategy, Global Health Initiatives
+        Python, JavaScript, React, Node.js, AWS
         
