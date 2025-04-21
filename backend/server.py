@@ -425,31 +425,33 @@ def analyze_skills(skills):
     """Analyze the skills section"""
     score = 0
     feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
     
     if not skills or len(skills) == 0:
         feedback.append("Your skills section is empty. Adding relevant skills is crucial for discoverability.")
-        return 0, feedback
+        return 0, feedback, category_scores
     
-    # Check number of skills
+    # Assess completeness (25 points) - based on number of skills
     num_skills = len(skills)
     if num_skills < 5:
+        category_scores["completeness"] = 5
         feedback.append("Consider adding more skills to your profile. Aim for at least 15-20 relevant skills.")
-        score += 10
     elif num_skills < 10:
+        category_scores["completeness"] = 12
         feedback.append("You have a good start with your skills, but adding more would improve visibility.")
-        score += 25
     elif num_skills < 20:
+        category_scores["completeness"] = 20
         feedback.append("You have a good number of skills listed.")
-        score += 40
     else:
+        category_scores["completeness"] = 25
         feedback.append("You have an impressive list of skills. Ensure they're all relevant and current.")
-        score += 45
     
-    # Check for endorsements
-    # This would require more detailed API data
-    
-    # Check for skill categories
-    # Simple approach: check for skills in different categories
+    # Assess keywords (25 points) - check for skill categories and industry relevance
     technical_skills = ["programming", "coding", "software", "development", "engineering"]
     soft_skills = ["leadership", "communication", "teamwork", "collaboration", "problem-solving"]
     domain_skills = ["marketing", "sales", "finance", "hr", "design", "product"]
@@ -458,22 +460,35 @@ def analyze_skills(skills):
     has_soft = any(any(soft in skill.lower() for soft in soft_skills) for skill in skills)
     has_domain = any(any(domain in skill.lower() for domain in domain_skills) for skill in skills)
     
-    category_score = 0
+    keyword_score = 0
     if has_technical:
-        category_score += 15
+        keyword_score += 8
     if has_soft:
-        category_score += 15
+        keyword_score += 8
     if has_domain:
-        category_score += 15
+        keyword_score += 9
     
-    score += min(45, category_score)
+    category_scores["keywords"] = keyword_score
     
-    if category_score < 15:
+    if keyword_score < 8:
         feedback.append("Try to include a more diverse set of skills across different categories.")
-    elif category_score < 30:
+    elif keyword_score < 17:
         feedback.append("You have skills in a couple of categories. Consider adding more diverse skills.")
     else:
         feedback.append("Great job showcasing a diverse range of skills across different categories.")
+    
+    # Assess relevance (25 points) 
+    # Since we don't have the target role, we'll use a placeholder approach
+    # In a full implementation, we'd compare skills against a target role's requirements
+    category_scores["relevance"] = min(25, num_skills / 20 * 25)  # Placeholder: more skills = more likely to be relevant
+    
+    # Assess impact (25 points)
+    # For skills, "impact" is less applicable, so we'll focus on endorsements and skill arrangement
+    # This is a placeholder since we don't have endorsement data
+    category_scores["impact"] = min(25, num_skills / 25 * 25)  # Placeholder
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
     
     # Final assessment
     if score < 30:
@@ -485,7 +500,237 @@ def analyze_skills(skills):
     else:
         feedback.append("Your skills section is excellent and strategically positions you in your field.")
     
-    return min(100, score), feedback
+    return min(100, score), feedback, category_scores
+
+def analyze_certifications(certifications):
+    """Analyze certifications section"""
+    score = 0
+    feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
+    
+    if not certifications or len(certifications) == 0:
+        feedback.append("You don't have any certifications listed. Consider adding relevant certifications to demonstrate your expertise.")
+        return 0, feedback, category_scores
+    
+    # Assess completeness (25 points)
+    num_certs = len(certifications)
+    if num_certs == 1:
+        category_scores["completeness"] = 10
+        feedback.append("You have one certification listed. Consider adding more if applicable.")
+    elif num_certs <= 3:
+        category_scores["completeness"] = 20
+        feedback.append("You have a good number of certifications listed.")
+    else:
+        category_scores["completeness"] = 25
+        feedback.append("You have an impressive list of certifications.")
+    
+    # Assess relevance (25 points) - placeholder calculation
+    category_scores["relevance"] = 15  # Default middle value
+    
+    # Assess impact (25 points) - placeholder calculation
+    category_scores["impact"] = 15  # Default middle value
+    
+    # Assess keywords (25 points) - placeholder calculation
+    category_scores["keywords"] = 15  # Default middle value
+    
+    # Add general feedback
+    feedback.append("Make sure your certifications are current and from reputable organizations.")
+    feedback.append("Consider highlighting your most prestigious or relevant certifications in your featured section.")
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
+    
+    return min(100, score), feedback, category_scores
+
+def analyze_recommendations(recommendations):
+    """Analyze recommendations section"""
+    score = 0
+    feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
+    
+    if not recommendations or len(recommendations) == 0:
+        feedback.append("You don't have any recommendations. Request recommendations from colleagues, managers, or clients to boost credibility.")
+        return 0, feedback, category_scores
+    
+    # Assess completeness (25 points)
+    num_recs = len(recommendations)
+    if num_recs == 1:
+        category_scores["completeness"] = 10
+        feedback.append("You have one recommendation. Try to get 3-5 quality recommendations.")
+    elif num_recs <= 3:
+        category_scores["completeness"] = 20
+        feedback.append("You have a good number of recommendations.")
+    else:
+        category_scores["completeness"] = 25
+        feedback.append("You have an impressive number of recommendations.")
+    
+    # Assess impact (25 points) - placeholder calculation
+    category_scores["impact"] = min(25, num_recs * 5)  # Each recommendation adds "impact"
+    
+    # Assess relevance (25 points) - placeholder calculation
+    category_scores["relevance"] = 15  # Default middle value
+    
+    # Assess keywords (25 points) - placeholder calculation
+    category_scores["keywords"] = 15  # Default middle value
+    
+    # Add general feedback
+    feedback.append("Aim for recommendations that highlight specific skills and accomplishments.")
+    feedback.append("Request recommendations from diverse sources: supervisors, peers, and subordinates.")
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
+    
+    return min(100, score), feedback, category_scores
+
+def analyze_visuals(visuals):
+    """Analyze profile and banner images"""
+    score = 0
+    feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
+    
+    has_profile = visuals.get("has_profile_image", False)
+    has_banner = visuals.get("has_banner", False)
+    
+    # Assess completeness (25 points)
+    if has_profile and has_banner:
+        category_scores["completeness"] = 25
+        feedback.append("Great job having both a profile picture and banner image.")
+    elif has_profile:
+        category_scores["completeness"] = 15
+        feedback.append("You have a profile picture but no banner image. Adding a banner can enhance your profile's visual appeal.")
+    elif has_banner:
+        category_scores["completeness"] = 10
+        feedback.append("You have a banner image but no profile picture. A professional profile picture is essential.")
+    else:
+        category_scores["completeness"] = 0
+        feedback.append("You're missing both profile picture and banner image. These visuals are crucial for a complete profile.")
+    
+    # Assess impact (25 points)
+    # Without seeing the actual images, we'll use placeholder values
+    if has_profile:
+        category_scores["impact"] = 15
+        feedback.append("Ensure your profile picture is professional, clear, and friendly.")
+    else:
+        category_scores["impact"] = 0
+    
+    if has_banner:
+        category_scores["impact"] += 10
+        feedback.append("Make sure your banner image reflects your personal brand and professional identity.")
+    
+    # Relevance and keywords don't apply as strongly to visuals
+    category_scores["relevance"] = has_profile * 15 + has_banner * 10  # Simple calculation
+    category_scores["keywords"] = 0  # Not applicable to images
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
+    
+    return min(100, score), feedback, category_scores
+
+def analyze_featured(featured):
+    """Analyze featured section"""
+    score = 0
+    feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
+    
+    if not featured or len(featured) == 0:
+        feedback.append("Your featured section is empty. Add articles, posts, or projects to showcase your expertise.")
+        return 0, feedback, category_scores
+    
+    # Assess completeness (25 points)
+    num_featured = len(featured)
+    if num_featured == 1:
+        category_scores["completeness"] = 10
+        feedback.append("You have one item in your featured section. Consider adding 3-5 items for a more comprehensive showcase.")
+    elif num_featured <= 3:
+        category_scores["completeness"] = 20
+        feedback.append("You have a good number of items in your featured section.")
+    else:
+        category_scores["completeness"] = 25
+        feedback.append("Your featured section has an impressive number of items.")
+    
+    # Assess impact (25 points) - placeholder calculation
+    category_scores["impact"] = min(25, num_featured * 5)  # Each featured item adds "impact"
+    
+    # Assess relevance (25 points) - placeholder calculation
+    category_scores["relevance"] = 15  # Default middle value
+    
+    # Assess keywords (25 points) - placeholder calculation
+    category_scores["keywords"] = 15  # Default middle value
+    
+    # Add general feedback
+    feedback.append("Include a diverse mix of content types in your featured section (articles, posts, projects, etc.).")
+    feedback.append("Regularly update your featured content to show your latest work and thinking.")
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
+    
+    return min(100, score), feedback, category_scores
+
+def analyze_activity(activity):
+    """Analyze recent LinkedIn activity"""
+    score = 0
+    feedback = []
+    category_scores = {
+        "completeness": 0,
+        "relevance": 0,
+        "impact": 0,
+        "keywords": 0
+    }
+    
+    if not activity or len(activity) == 0:
+        feedback.append("You don't have any recent activity. Regular posting and engagement is crucial for visibility.")
+        return 0, feedback, category_scores
+    
+    # Assess completeness (25 points)
+    num_activity = len(activity)
+    if num_activity == 1:
+        category_scores["completeness"] = 10
+        feedback.append("You have very limited recent activity. Aim for at least weekly posting or engagement.")
+    elif num_activity <= 3:
+        category_scores["completeness"] = 20
+        feedback.append("You have some recent activity, which is good. Consider increasing frequency for better visibility.")
+    else:
+        category_scores["completeness"] = 25
+        feedback.append("You're actively engaging on LinkedIn, which is excellent for visibility.")
+    
+    # Assess impact (25 points) - placeholder calculation
+    category_scores["impact"] = min(25, num_activity * 6)  # Each activity adds "impact"
+    
+    # Assess relevance (25 points) - placeholder calculation
+    category_scores["relevance"] = 15  # Default middle value
+    
+    # Assess keywords (25 points) - placeholder calculation
+    category_scores["keywords"] = 15  # Default middle value
+    
+    # Add general feedback
+    feedback.append("Focus on creating original content rather than just sharing others' posts.")
+    feedback.append("Engage with your network by commenting thoughtfully on others' posts.")
+    feedback.append("Consistency is key - establish a regular posting schedule.")
+    
+    # Calculate overall score
+    score = sum(category_scores.values())
+    
+    return min(100, score), feedback, category_scores
 
 def generate_mock_profile_data(username):
     """Generate mock LinkedIn profile data for demonstration purposes"""
